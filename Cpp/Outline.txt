@@ -1,0 +1,30 @@
+Graph Data Structures
+Tree Data Structures
+Problem Solving Paradigms:Iterative (Fancy Techniques)
+Problem Solving Paradigms:Recursive Backtracking (Medium)
+Problem Solving Paradigms:Recursive Backtracking (Harder)
+Problem Solving Paradigms:Divide and Conquer Problems
+Graph Traversal: Finding Articulation Points/Bridges
+Graph Traversal: Finding Strongly Connected Components
+Graph: Standard Network Flow
+Graph: Variant Network Flow
+Special Graph: Eulerian Graph
+Special Graph (DAG): Single-Source Shortest/Longest Paths on DAG
+Special Graph (DAG): Counting Paths in DAG
+Special Graph (DAG): Converting General Graph to DAG
+
+Combinatorics-Fibonacci Numbers
+Combinatorics-Binomial Coefficients
+Combinatorics-Catalan Numbers
+Combinatorics-Others
+Number Theory-Finding Prime Factors
+Number Theory-Working with Prime Factors
+Number Theory-Factorial
+Number Theory-GCD and/or LCM
+Number Theory-Functions involving Prime Factors
+Number Theory-Modified Sieve
+Number Theory-Modulo Arithmetic
+Math: Probability Theory
+Math: Cycle-Finding
+Math: Game Theory
+String Processing-Suffix Trie, Tree, Array
