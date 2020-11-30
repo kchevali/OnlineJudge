@@ -35,10 +35,11 @@ const double pi = 2 * acos(0.0);
 const double EPS = 1e-6;
 
 //---------------------------------------------------------------BITS
-#define count_bits __builtin_popcountll  // number of 'on' bits in long long
-#define trail_bits __builtin_ffsll       // index of rightmost 'on' (1-64)
-#define lead_bits __builtin_clzll  // index of leftmost  'on' (1-64) from left
+#define count_bits __builtin_popcountll     // number of 'on' bits in long long
+#define trail_bits __builtin_ffsll          // index of rightmost 'on' (1-64)
+#define lead_bits __builtin_clzll           // index of leftmost  'on' (1-64) from left
 #define bit(x, b) bitset<b>(x).to_string()  // prints x with b bits
+#define LSOne(x) x &(-x)                    // least significant bit
 
 //---------------------------------------------------------------DEBUGGING
 #define con(x, a, b) \
@@ -47,14 +48,15 @@ const double EPS = 1e-6;
   C "[";                        \
   for (auto &y : x) C y << " "; \
   C "]" E;
-#define db(args...)                          \
-  {                                          \
-    string _s = #args;                       \
-    replace(_s.begin(), _s.end(), ',', ' '); \
-    stringstream _ss(_s);                    \
-    istream_iterator<string> _it(_ss);       \
-    err(_it, args);                          \
-    cerr << "\n";                            \
+#define db(args...)                           \
+  {                                           \
+    string _s = #args;                        \
+    replace(_s.begin(), _s.end(), ' ', '\0'); \
+    replace(_s.begin(), _s.end(), ',', ' ');  \
+    stringstream _ss(_s);                     \
+    istream_iterator<string> _it(_ss);        \
+    err(_it, args);                           \
+    cerr << "\n";                             \
   }
 void err(istream_iterator<string> it) {}
 template <typename T, typename... Args>

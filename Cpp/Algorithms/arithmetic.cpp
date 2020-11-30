@@ -3,7 +3,7 @@
 // Here are some useful methods that dealing with primes numbers.
 class Primes {
  public:
-  vl primes = vl();
+  vl primes;
   vector<bool> bs;
 
   // SIEVE

@@ -1,7 +1,8 @@
-// KNAPSACK
-#include "../Template.cpp"
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long l;
 
-const l N = 100, C = 100;  // max items, max wtacity
+const l N = 2000 + 10, C = 2000 + 10;  // max items, max wtacity
 l dp[N][C];
 l val[N], wt[N];  // input
 bool included[N][C], ans[N];
@@ -26,29 +27,28 @@ l knapsack(l n, l c) {
   }
 
   // get boolean indicies - included?
-  l w = c;
+  l w = c, count = 0;
   for (l i = n - 1; i >= 0; i--)
     if ((ans[i] = included[i + 1][w])) {
       w -= wt[i];
+      count++;
     }
-  return c - w;
+  return count;
 }
 
 int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(NULL);
   l n, c;
-  scanf("%lld%lld", &n, &c);
-  for (l i = 0; i < n; i++) scanf("%lld", wt + i);
-  for (l i = 0; i < n; i++) scanf("%lld", val + i);
-
-  l weight = knapsack(n, c);
-  cout << "Total Value: " << dp[n][c] << " Total Weight: " << weight << "\n";
-  for (l i = 0; i < n; i++) {
-    cout << ans[i] << " ";
+  while (scanf("%lld%lld", &c, &n) != EOF) {
+    for (l i = 0; i < n; i++) {
+      scanf("%lld", val + i);
+      scanf("%lld", wt + i);
+    }
+    printf("%lld\n", knapsack(n, c));
+    for (l i = 0; i < n; i++) {
+      if (ans[i]) printf("%lld ", i);
+    }
+    printf("\n");
   }
-  cout << "\n";
 }
-/*
-4 8
-1 2 4 5
-1 0 4 3
-*/

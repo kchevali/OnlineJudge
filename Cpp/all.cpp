@@ -4,6 +4,7 @@
 
 // TYPES
 
+typedef vector<l> vl;
 typedef vector<vl> vvl;
 typedef pair<l, l> ll;
 typedef vector<ll> vll;

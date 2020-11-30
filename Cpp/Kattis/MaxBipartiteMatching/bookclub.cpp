@@ -1,6 +1,9 @@
-#include "../Template.cpp"
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long l;
+typedef vector<l> vl;
 
-const l N = 1e3;
+const l N = 2e4 + 10;
 vl adj[N];
 l match[N];
 bool vis[N];
@@ -27,28 +30,16 @@ l getMatching(l n, l n_left) {
 }
 
 int main() {
-  l n, n_left, edges;  //  V: total vertex, V_l: vertex on left side
-  cin >> n >> n_left >> edges;
+  ios_base::sync_with_stdio(false);
+  cin.tie(NULL);
+  l n, edges;
+  cin >> n >> edges;
   for (l i = 0; i < edges; i++) {
     l a, b;
     cin >> a >> b;
-    adj[a].push_back(b);  // ignore index 0?? - check this
+    adj[a].push_back(b + n);
   }
-
-  cout << getMatching(n, n_left) << endl;
-  return 0;
+  l ans = getMatching(n + n, n);
+  // cout << ans << "\n";
+  cout << (ans == n ? "YES" : "NO") << "\n";
 }
-
-/*
-12 6 8
-0 7
-0 8
-2 6
-2 9
-3 8
-4 8
-4 9
-5 11
-Solution: 5
-
-*/

@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long l;
-typedef vector<l> vl;
 
 // #include "../all.cpp"
 // int main() {

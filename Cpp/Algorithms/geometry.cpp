@@ -17,9 +17,7 @@ oo scl(oo a, o b) { return make_pair(a.xx * b, a.yy * b); }
 l cmp(o a, o b) { return abs(a - b) < EPS ? 0 : (a > b ? 1 : -1); }
 l sgn(l val) { return val > 0 ? 1 : (val == 0 ? 0 : -1); }
 o sqrLen(oo a) { return dot(a, a); }
-o distSq(oo a, oo b) {
-  return (a.xx - b.xx) * (a.xx - b.xx) + (a.yy - b.yy) * (a.yy - b.yy);
-}
+o distSq(oo a, oo b) { return (a.xx - b.xx) * (a.xx - b.xx) + (a.yy - b.yy) * (a.yy - b.yy); }
 // left: postive // right: negative // colinear: 0
 o ccw(oo p, oo a, oo b) { return cross(sub(a, p), sub(b, p)); }
 oo firstPoint;
@@ -27,9 +25,7 @@ bool angleCmp(const oo a, const oo b) {
   l deg = ccw(a, b, firstPoint);
   return deg == 0 ? (distSq(firstPoint, a) < distSq(firstPoint, b)) : deg > 0;
 }
-bool lexComp(oo a, oo b) {
-  return a.yy < b.yy || (a.yy == b.yy && a.xx < b.xx);
-}
+bool lexComp(oo a, oo b) { return a.yy < b.yy || (a.yy == b.yy && a.xx < b.xx); }
 
 oo center;
 oo getCenter(voo &p) {
@@ -46,22 +42,18 @@ bool lessPt(const oo a, const oo b) {
   if (cmp(a.xx, center.xx) >= 0 && cmp(b.xx, center.xx) < 0) return true;
   if (cmp(a.xx, center.xx) < 0 && cmp(b.xx, center.xx) >= 0) return false;
   if (cmp(a.xx, center.xx) == 0 && cmp(b.xx, center.xx) == 0) {
-    if (cmp(a.yy, center.yy) >= 0 || cmp(b.yy, center.yy) >= 0)
-      return a.yy > b.yy;
+    if (cmp(a.yy, center.yy) >= 0 || cmp(b.yy, center.yy) >= 0) return a.yy > b.yy;
     return b.yy > a.yy;
   }
 
   // compute the cross product of vectors (center -> a) x (center -> b)
-  l det = (a.xx - center.xx) * (b.yy - center.yy) -
-          (b.xx - center.xx) * (a.yy - center.yy);
+  l det = (a.xx - center.xx) * (b.yy - center.yy) - (b.xx - center.xx) * (a.yy - center.yy);
   if (det != 0) return det < 0;
 
   // points a and b are on the same line from the center
   // check which point is closer to the center
-  l d1 = (a.xx - center.xx) * (a.xx - center.xx) +
-         (a.yy - center.yy) * (a.yy - center.yy);
-  l d2 = (b.xx - center.xx) * (b.xx - center.xx) +
-         (b.yy - center.yy) * (b.yy - center.yy);
+  l d1 = (a.xx - center.xx) * (a.xx - center.xx) + (a.yy - center.yy) * (a.yy - center.yy);
+  l d2 = (b.xx - center.xx) * (b.xx - center.xx) + (b.yy - center.yy) * (b.yy - center.yy);
   return d1 > d2;
 }
 
@@ -85,10 +77,7 @@ oo rotate90CW(oo pt) { return {pt.yy, -pt.xx}; }   // 90 degrees
 oo rotate45(oo pt) { return {pt.yy, pt.xx}; }      // 45 degrees
 
 // ***IMPORTANT*** return 2x the area
-o triangleArea(oo a, oo b, oo c) {
-  return (-b.yy * c.xx + a.yy * (-b.xx + c.xx) + a.xx * (b.yy - c.yy) +
-          b.xx * c.yy);
-}
+o triangleArea(oo a, oo b, oo c) { return (-b.yy * c.xx + a.yy * (-b.xx + c.xx) + a.xx * (b.yy - c.yy) + b.xx * c.yy); }
 
 // return true if point P lies on line AB
 bool inSegment(oo a, oo b, oo p) {
@@ -101,10 +90,7 @@ bool inSegment(oo a, oo b, oo p) {
 // In: -1, On: 0, Out: 1
 l inTriangle(oo a, oo b, oo c, oo p) {
   if (inSegment(a, b, p) || inSegment(a, c, p) || inSegment(b, c, p)) return 0;
-  return cmp(abs(ccw(a, b, c)),
-             abs(ccw(p, a, b)) + abs(ccw(p, b, c)) + abs(ccw(p, c, a))) == 0
-             ? -1
-             : 1;
+  return cmp(abs(ccw(a, b, c)), abs(ccw(p, a, b)) + abs(ccw(p, b, c)) + abs(ccw(p, c, a))) == 0 ? -1 : 1;
 }
 
 // return true if the point p is inside or on the polygon
@@ -116,8 +102,7 @@ l inConvexPolygon(oo p, voo &hull) {
     l mid = MID(a, b);
     o cross1 = ccw(first, hull[mid], p);
     o cross2 = ccw(first, hull[mid + 1], p);
-    if (cmp(cross1, 0) >= 0 && cmp(cross2, 0) <= 0 &&
-        inTriangle(first, hull[mid], hull[mid + 1], p) <= 0)
+    if (cmp(cross1, 0) >= 0 && cmp(cross2, 0) <= 0 && inTriangle(first, hull[mid], hull[mid + 1], p) <= 0)
       return inSegment(hull[mid], hull[mid + 1], p) ? 0 : -1;
     else if (cmp(cross1, 0) < 0)
       b = mid - 1;
@@ -175,9 +160,7 @@ l inSimplePolygon(oo point, voo &poly) {
     if (point == poly[i]) return 0;
     l j = (i + 1) % n;
     if (poly[i].yy == point.yy && poly[j].yy == point.yy) {
-      if (min(poly[i].xx, poly[j].xx) <= point.xx &&
-          point.xx <= max(poly[i].xx, poly[j].xx))
-        return 0;
+      if (min(poly[i].xx, poly[j].xx) <= point.xx && point.xx <= max(poly[i].xx, poly[j].xx)) return 0;
     } else {
       bool below = poly[i].yy < point.yy;
       if (below != (poly[j].yy < point.yy)) {
@@ -200,35 +183,30 @@ void rotateBottomToIndexZero(voo &p) {
 bool isConvex(const voo &p, l n) {
   if (n <= 3) return false;  // a point/n=2 or a line/n=3 is not convex
   bool isLeft = ccw(p[0], p[1], p[2]);
-  l i;                           // remember one result
-  for (l i = 0; i < n - 1; i++)  // then compare with the others
-    if (ccw(p[i], p[i + 1], p[(i + 2) == n ? 1 : i + 2]) != isLeft)
-      return false;  // different sign -> this polygon is concave
+  l i;                                                                             // remember one result
+  for (l i = 0; i < n - 1; i++)                                                    // then compare with the others
+    if (ccw(p[i], p[i + 1], p[(i + 2) == n ? 1 : i + 2]) != isLeft) return false;  // different sign -> this polygon is concave
   return true;
 }
 
 l bottomLeftIndex(voo &p, l n) {
   l i, firstIndex = 0;
   for (l i = 1; i < n; i++) {
-    if (p[i].yy < p[firstIndex].yy ||
-        (p[i].yy == p[firstIndex].yy && p[i].xx < p[firstIndex].xx))
-      firstIndex = i;
+    if (p[i].yy < p[firstIndex].yy || (p[i].yy == p[firstIndex].yy && p[i].xx < p[firstIndex].xx)) firstIndex = i;
   }
   return firstIndex;
 }
 l topRightIndex(voo &p, l n) {
   l i, index = 0;
   for (l i = 1; i < n; i++) {
-    if (p[i].yy > p[index].yy ||
-        (p[i].yy == p[index].yy && p[i].xx > p[index].xx))
-      index = i;
+    if (p[i].yy > p[index].yy || (p[i].yy == p[index].yy && p[i].xx > p[index].xx)) index = i;
   }
   return index;
 }
 
 // return the convex hull of a set of points
 // required: firstPoint, ccw(),cross(),sub(),angleCmp
-
+// Complexity: n log n
 voo convexHull(voo &p) {
   l i, n = p.size();
   swap(p[0], p[bottomLeftIndex(p, n)]);
@@ -270,8 +248,7 @@ double polygonDiameter(voo &p, l n) {
     i = 0, j = k;
     while (i <= k && j < n) {
       res = max(distSq(p[i], p[j]), res);
-      while (j < n - 1 && abs(ccw(p[i], p[i + 1], p[j + 1])) >
-                              abs(ccw(p[i], p[i + 1], p[j]))) {
+      while (j < n - 1 && abs(ccw(p[i], p[i + 1], p[j + 1])) > abs(ccw(p[i], p[i + 1], p[j]))) {
         res = max(distSq(p[i], p[++j]), res);
       }
       i++;
@@ -292,8 +269,7 @@ void addPointHull(voo &hull, oo p, l n) {
   // Find the tangents
   l up = (h + 1) % n, low = (n + h - 1) % n;
   while (ccw(p, hull[up], hull[(up + 1) % n]) >= 0) up = (up + 1) % n;
-  while (ccw(p, hull[low], hull[(n + low - 1) % n]) <= 0)
-    low = (n + low - 1) % n;
+  while (ccw(p, hull[low], hull[(n + low - 1) % n]) <= 0) low = (n + low - 1) % n;
 
   // making the final hull by traversing points
   // from up to low of given convex hull.
@@ -311,25 +287,19 @@ void addPointHull(voo &hull, oo p, l n) {
 double polygonArea(voo &list) {
   double area = 0;
   l i;
-  for (l i = 0; i < list.size(); i++)
-    area += cross(list[i], list[(i + 1) % list.size()]);
+  for (l i = 0; i < list.size(); i++) area += cross(list[i], list[(i + 1) % list.size()]);
   return fabs(area) / 2.0;
 }
 
 void clockWiseSort(voo &p) { sort(p.begin(), p.end(), lessPt); }
 
 // same as ccw, this just return true or false
-bool leftTurn(oo a, oo b, oo c) {
-  return cmp(cross(sub(b, a), sub(c, a)), 0) > 0;
-}
+bool leftTurn(oo a, oo b, oo c) { return cmp(cross(sub(b, a), sub(c, a)), 0) > 0; }
 
 // return true if line AB intersect with line CD
 //***IMPORTANT*** does not include the case that one end of a line in on another
 // line
-bool isIntersect(oo a, oo b, oo c, oo d) {
-  return leftTurn(a, b, c) != leftTurn(a, b, d) &&
-         leftTurn(c, d, a) != leftTurn(c, d, b);
-}
+bool isIntersect(oo a, oo b, oo c, oo d) { return leftTurn(a, b, c) != leftTurn(a, b, d) && leftTurn(c, d, a) != leftTurn(c, d, b); }
 
 // line segment p-q intersect with line A-B. Name: lineIntersectSeg
 oo ptLineSegIntersect(oo p, oo q, oo A, oo B) {
@@ -338,18 +308,15 @@ oo ptLineSegIntersect(oo p, oo q, oo A, oo B) {
   o c = B.xx * A.yy - A.xx * B.yy;
   o u = abs(a * p.xx + b * p.yy + c);
   o v = abs(a * q.xx + b * q.yy + c);
-  return make_pair((p.xx * v + q.xx * u) / (u + v),
-                   (p.yy * v + q.yy * u) / (u + v));
+  return make_pair((p.xx * v + q.xx * u) / (u + v), (p.yy * v + q.yy * u) / (u + v));
 }
 
 oo ptLineLineIntersect(oo a, oo b, oo c, oo d) {
-  o m1 = a.xx != b.xx ? (a.yy - b.yy) / (a.xx - b.xx) : linf,
-    m2 = c.xx != d.xx ? (c.yy - d.yy) / (c.xx - d.xx) : linf;
+  o m1 = a.xx != b.xx ? (a.yy - b.yy) / (a.xx - b.xx) : linf, m2 = c.xx != d.xx ? (c.yy - d.yy) / (c.xx - d.xx) : linf;
   if (m1 != m2) {
     o x = (m1 * a.xx - m2 * c.xx + c.yy - a.yy) / (m1 - m2);
     x = m1 == linf ? a.xx : m2 == linf ? c.xx : x;
-    return make_pair(x, m2 == linf ? m1 * x + (a.yy - m1 * a.xx)
-                                   : m2 * x + (c.yy - m2 * c.xx));
+    return make_pair(x, m2 == linf ? m1 * x + (a.yy - m1 * a.xx) : m2 * x + (c.yy - m2 * c.xx));
   }
   return make_pair(linf, linf);
 }
@@ -362,8 +329,7 @@ l ptSegSegIntersect(oo a, oo b, oo c, oo d, oo &res) {
   }
   o t = cross(sub(c, a), c2) / cross(a2, c2);
   o u = cross(sub(c, a), a2) / cross(a2, c2);
-  if (cmp(t, 0) < 0 || cmp(t, 1) > 0 || cmp(u, 0) < 0 || cmp(u, 1) > 0)
-    return -1;  // no intersection
+  if (cmp(t, 0) < 0 || cmp(t, 1) > 0 || cmp(u, 0) < 0 || cmp(u, 1) > 0) return -1;  // no intersection
   oo ans = add(a, scl(a2, t));
   res.xx = ans.xx;
   res.yy = ans.yy;
@@ -403,8 +369,7 @@ void clip(voo &poly, oo a, oo b) {
     }
   }
   poly.clear();
-  for (l i = 0; i < pts.size(); i++)
-    poly.emplace_back(make_pair(pts[i].xx, pts[i].yy));
+  for (l i = 0; i < pts.size(); i++) poly.emplace_back(make_pair(pts[i].xx, pts[i].yy));
 }
 
 // Implements Sutherland–Hodgman algorithm
@@ -422,9 +387,7 @@ bool isSimplePolygon(voo list) {
   for (l i = 0; i < list.size(); i++) {
     for (l j = 0; i < list.size(); i++) {
       if (abs(i - j) <= 1 || abs(i - j) >= list.size() - 1) continue;
-      if (isIntersect(list[i], list[(i + 1) % list.size()], list[j],
-                      list[(j + 1) % list.size()]))
-        return false;
+      if (isIntersect(list[i], list[(i + 1) % list.size()], list[j], list[(j + 1) % list.size()])) return false;
     }
   }
   return true;
@@ -439,19 +402,16 @@ voo cutPolygon(oo a, oo b, voo Q) {
     double left1 = cross(sub(b, a), sub(Q[i], a)), left2 = 0;
     if (i != Q.size() - 1) left2 = cross(sub(b, a), sub(Q[i + 1], a));
     if (left1 > -EPS) P.emplace_back(Q[i]);  // Q[i] is on the left of ab
-    if (left1 * left2 < -EPS)  // edge (Q[i], Q[i+1]) crosses line ab
+    if (left1 * left2 < -EPS)                // edge (Q[i], Q[i+1]) crosses line ab
       P.emplace_back(ptLineSegIntersect(Q[i], Q[i + 1], a, b));
   }
-  if (!P.empty() &&
-      !(P[P.size() - 1].xx == P[0].xx && P[P.size() - 1].yy == P[0].yy))
-    P.emplace_back(P[0]);
+  if (!P.empty() && !(P[P.size() - 1].xx == P[0].xx && P[P.size() - 1].yy == P[0].yy)) P.emplace_back(P[0]);
   // make P's first point = P's last point
   return P;
 }
 
 int main() {
-  voo coords = {make_pair(10, 10), make_pair(0, 0), make_pair(0, 10),
-                make_pair(10, 0), make_pair(5, 5)};
+  voo coords = {make_pair(10, 10), make_pair(0, 0), make_pair(0, 10), make_pair(10, 0), make_pair(5, 5)};
   // center = getCenter(coords);
   // C "Center: " << center.xx << " " << center.yy E;
   // ;
@@ -469,17 +429,14 @@ int main() {
   // addPointHull(hull, newPt, h);
   // C "New HULL - Adding: " _ newPt.xx _ newPt.yy E;
   // for (auto i : hull) C i.xx << " " << i.yy E;
-  voo pts = {make_pair(8, 8), make_pair(7, 3), make_pair(0, 10),
-             make_pair(2, 20), make_pair(11, 1)};
+  voo pts = {make_pair(8, 8), make_pair(7, 3), make_pair(0, 10), make_pair(2, 20), make_pair(11, 1)};
 
   cout << "\nInside Simple HULL"
        << "\n";
-  for (oo pt : pts)
-    cout << pt.xx << " " << pt.yy << " " << inSimplePolygon(pt, hull) << "\n";
+  for (oo pt : pts) cout << pt.xx << " " << pt.yy << " " << inSimplePolygon(pt, hull) << "\n";
   cout << "\nInside Convex HULL"
        << "\n";
-  for (oo pt : pts)
-    cout << pt.xx << pt.yy << " " << inConvexPolygon(pt, hull) << "\n";
+  for (oo pt : pts) cout << pt.xx << pt.yy << " " << inConvexPolygon(pt, hull) << "\n";
 
   // voo tri1 = voo{make_pair(2, n2),   make_pair(2, 4), make_pair(4, 4),
   //                make_pair(3.5, 3), make_pair(4, 2), make_pair(2, 2)};
