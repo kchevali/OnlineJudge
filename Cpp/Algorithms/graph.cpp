@@ -3,28 +3,29 @@
 // Global variables
 const l N = 1e2;
 l maxLevel = inf, maxDistIndex = 0;
-l parent[N], rParent[N], path[N], depth[N], rDepth[N], resi[N][N], cap[N][N];
+l parent[N], rParent[N], path[N], depth[N], rDepth[N];
+l order[N], onStack[N], low[N], resi[N][N], cap[N][N];
 vector<l> adj[N], rAdj[N];
 vector<pair<l, l>> pAdj[N];
 bool vis[N], isNeg[N];
 typedef tuple<int, l, l> edge;  // weight, a, b
 
-// Function: get path from parent[]
+// Get Path: get path from parent[]
 // l path[N];
 
 // Complexity: O(n)
-void getPath(l dest, l pathLength) {
-  for (l i = pathLength - 1; i >= 0; i--) {
-    path[i] = dest;
-    dest = parent[dest];
-  }
+l getPath(l src, l dest) {
+  l length = 0;
+  while (src != dest) path[length++] = dest, dest = parent[dest];
+  // std::reverse(path, path + length); //to start at src instead of dest
+  return length;
 }
 
-// Function: Unweighted - find path from one source
+// BFS: Unweighted - find path from one source
 // const l N = 1e4, inf = 0x3f3f3f3f3f3f3f3f;
 // l parent[N], depth[N];
 // vector<l> adj[N];
-// Main: memset(depth,0x3f,sizeof(depth));for (l j = 0; j < n; j++) adj[j] = vl();
+// Main: memset(depth,0x3f,sizeof(l)*n);for (l j = 0; j < n; j++) adj[j] = vector<l>();
 // Complexity O(V+E)
 void bfs(l src) {
   queue<l> q;
@@ -36,9 +37,7 @@ void bfs(l src) {
     q.pop();
     for (l b : adj[a]) {
       if (depth[a] + 1 < depth[b]) {
-        depth[b] = depth[a] + 1;
-        parent[b] = a;
-        q.push(b);
+        depth[b] = depth[a] + 1, parent[b] = a, q.push(b);
       }
     }
   }
@@ -56,11 +55,9 @@ bool bidir_bfs(vector<l> adj[N], queue<l> &q, l dest, l parent[N], l depth[N], l
     if (depth[a] + 1 < depth[b]) {
       depth[b] = depth[a] + 1;
       if (depth[b] + rDepth[b] < depth[dest]) {
-        maxLevel = max(depth[b], rDepth[b]);
-        depth[dest] = depth[b] + rDepth[b];
+        maxLevel = max(depth[b], rDepth[b]), depth[dest] = depth[b] + rDepth[b];
       }
-      parent[b] = a;
-      q.push(b);
+      parent[b] = a, q.push(b);
     }
   }
   return true;
@@ -69,10 +66,8 @@ bool bidir_bfs(vector<l> adj[N], queue<l> &q, l dest, l parent[N], l depth[N], l
 // init depth to inf
 void bidir_search(l src, l dest) {
   queue<l> q1, q2;
-  q1.push(parent[src] = src);
-  depth[src] = 1;  // must be >= 0
-  q2.push(rParent[dest] = dest);
-  rDepth[dest] = -1;  // must be < 0
+  q1.push(parent[src] = src), depth[src] = 1;        // must be >= 0
+  q2.push(rParent[dest] = dest), rDepth[dest] = -1;  // must be < 0
   while (!q1.empty() && bidir_bfs(adj, q1, dest, parent, depth, rDepth) && !q2.empty() && bidir_bfs(rAdj, q2, dest, rParent, rDepth, depth)) {
   }
 }
@@ -130,38 +125,48 @@ void bidir_search(l src, l dest) {
 // const l N = 1e4, inf = 0x3f3f3f3f3f3f3f3f;
 // l parent[N], depth[N];
 // vector<l> adj[N];
-// Main: memset(depth,0x3f,sizeof(depth));for (l j = 0; j < n; j++) adj[j] = vl();
+// Main: memset(depth,0x3f,sizeof(l)*n);for (l j = 0; j < n; j++) adj[j] = vector<l>();
 // Complexity O(V+E)
-void dfs(l src) {  // insert for tree diameter
+void dfs(l src) {
   // depth = unordered_map<l, l>();//for freq depth reset use unordered_map, not memset
-  depth[src] = 0;
+  depth[parent[src] = src] = 0;
   stack<l> st;
   st.push(src);
   while (!st.empty()) {
     l a = st.top();
     st.pop();
     for (auto &b : adj[a]) {
-      if (depth[a] + 1 < depth[b]) {
-        parent[b] = a;
-        depth[b] = depth[a] + 1;
+      if (depth[b] == inf) {
+        parent[b] = a, depth[b] = depth[a] + 1, st.push(b);
         // if (depth[b] > depth[maxDistIndex]) maxDistIndex = b;  // get tree diameter
-        st.push(b);
       }
     }
   }
 }
+
+void dfsRecursive(l a, l &pathIndex);
+
+void dfsRecursive(l a) {
+  for (l b : adj[a]) {
+    if (depth[b] == inf) {
+      depth[b] = depth[a] + 1, parent[b] = a;
+      dfsRecursive(b);  //,pathIndex);
+    }
+  }
+  // path[pathIndex--] = a; // topological sort
+}
+
 void dfs(l src, l &maxDistIndex);  // update above for tree diameter
 
 l get_tree_diameter(l src) {
   l maxDistIndex = src;
-  dfs(src, maxDistIndex);
-  dfs(maxDistIndex, maxDistIndex);
+  dfs(src, maxDistIndex), dfs(maxDistIndex, maxDistIndex);
   return depth[maxDistIndex];
 }
 // int main() {
 //   l n, m, i;
 //   cin >> n >> m;
-//   vector<vl> adj(n, vl());
+//   vector<vl> adj(n, vector<l>());
 //   fpp(i, 0, m) {
 //     l a, b;
 //     cin >> a >> b;
@@ -186,18 +191,13 @@ l get_tree_diameter(l src) {
 
 class MaxFlow {
  public:
-  MaxFlow(l nodes) : n(nodes) {
-    edges.clear();
-    adj.assign(n, vl());
-  }
+  MaxFlow(l nodes) : n(nodes) { edges.clear(), adj.assign(n, vector<l>()); }
 
   // directed means one way edge
   void addEdge(l a, l b, l w, bool directed = true) {
     if (a == b) return;
-    edges.emplace_back(b, w, 0);
-    adj[a].push_back(edges.size() - 1);
-    edges.emplace_back(a, directed ? 0 : w, 0);
-    adj[b].push_back(edges.size() - 1);
+    edges.emplace_back(b, w, 0), adj[a].push_back(edges.size() - 1);
+    edges.emplace_back(a, directed ? 0 : w, 0), adj[b].push_back(edges.size() - 1);
   }
 
   // Complexity: O(V*E^2) - SLOWER
@@ -222,8 +222,7 @@ class MaxFlow {
 
  private:
   bool bfs(l src, l dest) {
-    d.assign(n, -1);
-    d[src] = 0;
+    d.assign(n, -1), d[src] = 0;
     queue<l> q({src});
     p.assign(n, {-1, -1});
     while (!q.empty()) {
@@ -285,33 +284,27 @@ class MaxFlow {
 //   return 0;
 // }
 
-// #define inf 0x3f3f3f3fLL
-
-// typedef pair<l, l> ll;
-// typedef vector<l> vl;
-// typedef vector<ll> vll;
-
+// Dijkstra: single source shortest path on weighted graph
+// Main:  memset(depth, 0x3f, sizeof(l) * n);memset(vis, 0, sizeof(bool) * n);
+// typedef pair<l, l> ll;typedef vector<l> vl;typedef vector<ll> vll;
 // const l N = 10001;
-// vector<pair<l,>> pAdj[N];
-// l depth[N];
+// vector<pair<l,l>> pAdj[N];
+// l depth[N], parent[N];
 // bool vis[N];
-
-void dijkstra(l source, l n) {
-  for (l i = 0; i < n; i++) {
-    depth[i] = inf;
-    vis[i] = 0;
-  }
+// Complexity: O(V + E*log(V))
+void dijkstra(l src, l dest) {
   priority_queue<ll, vll, greater<ll>> pq;  // w, node
-  pq.push(make_pair(depth[source] = 0, source));
+  pq.push(make_pair(depth[src] = 0, parent[src] = src));
   while (!pq.empty()) {
     ll curr = pq.top();
     pq.pop();
     l a = curr.second;
+    if (a == dest) return;  // remove dest to explore all
     if (vis[a]) continue;
     vis[a] = true;
-    for (l i = 0; i < adj[a].size(); i++) {
-      l b = pAdj[a][i].second, w = pAdj[a][i].first;
+    for (auto &[w, b] : pAdj[a]) {
       if (!vis[b] && w + depth[a] < depth[b]) {
+        parent[b] = a;
         pq.push(make_pair((depth[b] = w + depth[a]), b));
       }
     }
@@ -341,42 +334,36 @@ void dijkstra(l source, l n) {
 //     cout << "\n";
 //   }
 
-// const l N = 1001;
-// vll adj[N];
-// l depth[N];
-// bool isNeg[N];
-
-// The main function that finds shortest depthances from src to
+// Bellman Ford Algorithm
+// The main function that finds shortest distances from src to
 // all other vertices using Bellman-Ford algorithm.  The function
 // also detects negative weight cycle
+
+// typedef vector<pair<l,l>> vll;
+// const l N = 1001,inf=0x3f3f3f3f3f3f3f3f;
+// vll pAdj[N];
+// l depth[N];
+// bool isNeg[N];
+// Complexity: O(V*E)
 void bellmanFord(l src, l n) {
-  for (l i = 0; i < n; i++) {
-    depth[i] = inf;
-    isNeg[i] = false;
-  }
+  memset(depth, 0x3f, sizeof(l) * n);
+  memset(isNeg, 0, sizeof(l) * n);
   depth[src] = 0;
 
   for (l i = 1; i < n; i++)
     for (l a = 0; a < n; a++)
       if (depth[a] != inf)
-        for (l j = 0; j < adj[a].size(); j++) {
-          l b = pAdj[a][j].second;
-          l w = pAdj[a][j].first;
-          depth[b] = min(depth[a] + w, depth[b]);
-        }
+        for (auto &[w, b] : pAdj[a]) depth[b] = min(depth[a] + w, depth[b]);
 
   bool isDone = false;
   while (!isDone) {
     isDone = true;
     for (l a = 0; a < n; a++) {
       if (depth[a] == inf) continue;
-      for (l i = 0; i < adj[a].size(); i++) {
-        l b = pAdj[a][i].second;
-        l w = pAdj[a][i].first;
+      for (auto &[w, b] : pAdj[a]) {
         if (depth[a] + w < depth[b] && !isNeg[b]) {
-          isNeg[b] = true;
-          isDone = false;
-          depth[b] = -inf;
+          // found negative cycle at node b
+          isNeg[b] = true, isDone = false, depth[b] = -inf;  // cost to reach node b
         }
       }
     }
@@ -411,39 +398,34 @@ void bellmanFord(l src, l n) {
 // }
 
 // Tarjan's Strongly Connected Component
-// Cycle detection //O(V+E)
+// Directed graph is said to be strongly connected if every vertex is reachable from every other vertex
+// Cycle detection
 
-// supporting
-void dfsSCC(l &a, vl *adj, stack<l> &st, l *onStack, l *ids, l *low, l &id, l &counter) {
-  st.push(a);
-  onStack[a] = true;
-  ids[a] = low[a] = id++;
+// const l N = 1e6;
+// vl adj[N], order[N],onStack[N],low[N];
+void dfsSCC(l &a, stack<l> &st, l &id, l &counter) {
+  st.push(a), onStack[a] = true, order[a] = low[a] = id++;
   for (auto &b : adj[a]) {
-    if (ids[b] == -1) dfsSCC(b, adj, st, onStack, ids, low, id, counter);
+    if (order[b] == -1) dfsSCC(b, st, id, counter);
     if (onStack[b]) low[a] = min(low[a], low[b]);
   }
-  if (ids[a] == low[a]) {
+  if (order[a] == low[a]) {
     l c;
     do {
-      c = st.top();
-      st.pop();
-      onStack[c] = false;
-      low[c] = ids[a];
+      c = st.top(), st.pop(), onStack[c] = false, low[c] = order[a];
     } while (c != a);
     counter++;
   }
 }
 // main - low -> uninit array[n]
+// Complexity: O(V+E)
 l SCC(vl *adj, l n, l *low) {
   l id = 0, counter = 0;
-  l ids[n], onStack[n];
   stack<l> st;
-  for (l i = 0; i < n; i++) {
-    ids[i] = -1;
-    onStack[i] = false;
-  }
+  memset(order, -1, sizeof(l) * n);
+  memset(onStack, 0, sizeof(l) * n);
   for (l i = 0; i < n; i++)
-    if (ids[i] == -1) dfsSCC(i, adj, st, onStack, ids, low, id, counter);
+    if (order[i] == -1) dfsSCC(i, st, id, counter);
   return counter;
 }
 
@@ -458,25 +440,25 @@ void APSP(l n) {
         if (depNN[i][k] != inf && depNN[k][j] != inf) depNN[i][j] = min(depNN[i][j], depNN[i][k] + depNN[k][j]);
 }
 
-int main() {
-  // example that treats neg weight as inf
-  l n;
-  cin >> n;
-  for (l i = 0; i < n; i++) {
-    for (l j = 0; j < n; j++) {
-      scanf("%lld", &depNN[i][j]);
-      if (depNN[i][j] < 0) depNN[i][j] = inf;
-    }
-  }
+// int main() {
+//   // example that treats neg weight as inf
+//   l n;
+//   cin >> n;
+//   for (l i = 0; i < n; i++) {
+//     for (l j = 0; j < n; j++) {
+//       scanf("%lld", &depNN[i][j]);
+//       if (depNN[i][j] < 0) depNN[i][j] = inf;
+//     }
+//   }
 
-  APSP(n);
-  for (l i = 0; i < n; i++) {
-    for (l j = 0; j < n; j++) {
-      cout << depNN[i][j] << " ";
-    }
-    cout << "\n";
-  }
-}
+//   APSP(n);
+//   for (l i = 0; i < n; i++) {
+//     for (l j = 0; j < n; j++) {
+//       cout << depNN[i][j] << " ";
+//     }
+//     cout << "\n";
+//   }
+// }
 
 /*
 All Pair Shortest Path

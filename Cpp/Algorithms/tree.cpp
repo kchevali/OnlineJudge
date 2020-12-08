@@ -3,39 +3,40 @@
 #include "set.cpp"
 
 //================================================================================================================================================
-// Minimum Spanning Tree
+// Minimum Spanning Tree: Edges that minimize cost to connect all the vertices
+struct edge {
+  double w;
+  l a, b;
+  edge(double w, l a, l b) : a(a), b(b), w(w) {}
+  bool operator<(const struct edge &other) const { return w > other.w; }
+};
 
-typedef tuple<o, l, l> T;
-typedef vector<T> vT;
-typedef vector<vT> vvT;
-typedef pair<l, l> ll;
-typedef vector<bool> vb;
-typedef priority_queue<T, vector<T>, less<T>> pq;  // max out
-
-vvT adj;
-vector<ll> result;
-// result = vector<ll>();mst();
-l prim_mst() {
+const l N = 750 + 10;
+vector<pair<double, l>> pAdj[N];
+bool vis[N];
+double x[N], y[N];
+vector<edge> result;
+// Main:
+// Complexity: O(E*log(V))
+double prim_mst(l src) {
   double weight = 0;
-  vb visited(adj.size(), false);
-  pq q;
-
-  visited[0] = true;
-  for (auto x : adj[0]) q.push(x);
+  vis[src] = true;
+  priority_queue<edge, vector<edge>, less<edge>> q;
+  for (auto &[w, b] : pAdj[src]) {
+    q.push(edge(w, src, b));
+  }
 
   while (!q.empty()) {
-    auto t = q.top();
+    const edge e = q.top();
+    auto &[w, a, b] = e;
     q.pop();
 
-    double w = get<0>(t);
-    l a = get<1>(t), b = get<2>(t);
-
-    if (!visited[b]) {
+    if (!vis[b]) {
+      vis[b] = true;
       weight += w;
-      result.push_back((ll){a, b});  // store the MST
-      visited[b] = true;
-      for (auto x : adj[b]) {
-        if (!visited[get<2>(x)]) q.push(x);
+      result.push_back(e);  // store the MST
+      for (auto &[w2, c] : pAdj[b]) {
+        if (!vis[c]) q.push(edge(w2, b, c));
       }
     }
   }

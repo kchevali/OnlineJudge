@@ -58,6 +58,7 @@ Lower index: 8 Value: 8
 Upper index: 9 Value: 0
 */
 
+// methods here in case needs modification
 l* my_lower_bound(l* a, l* b, l t) {
   while (a < b) {
     l* m = a + (b - a) / 2;
@@ -69,6 +70,7 @@ l* my_lower_bound(l* a, l* b, l t) {
   return a;
 }
 
+// methods here in case needs modification
 l* my_upper_bound(l* a, l* b, l t) {
   while (a < b) {
     l* m = a + (b - a) / 2;

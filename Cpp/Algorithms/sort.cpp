@@ -1,22 +1,31 @@
 #include "graph.cpp"
 
-vl topologicalSort(vvl& adj) {
-  vl endTimes = dfs(adj), result = vl(adj.size(), 0);
-  for (l i = 0; i < result.size(); i++) result[endTimes[i]] = i;
-  return result;
+// Topological Sort(DAG): result in path
+// l path[N];
+// void dfsRecursive(l a, l& pathIndex);
+// Complexity: O(V+E)
+void topologicalSort(l n) {
+  l pathIndex = n - 1;
+  for (l i = 0; i < n; i++) {
+    if (depth[i] == inf) {
+      depth[i] = 0;
+      parent[i] = i;
+      dfsRecursive(i, pathIndex);
+    }
+  }
 }
 
 int main() {
   l n, m, i;
   cin >> n >> m;
-  vvl adj(n);
   for (l i = 0; i < m; i++) {
     l a, b;
     cin >> a >> b;
     adj[a].push_back(b);
     adj[b].push_back(a);
   }
-  for (auto& a : topologicalSort(adj)) cout << a << " ";
+  topologicalSort(n);
+  for (l i = 0; i < n; i++) cout << path[i] << " ";
   cout << "\n";
   return 0;
 }
