@@ -15,7 +15,7 @@ public class grid {
 
     public static void main(String[] args) throws IOException {
 
-        // Scanner in = new Scanner(System.in);
+        // Scanner in = new BufferedReader(new InputStreamReader(System.in));
         Scanner in = new Scanner(System.in);
         R = in.nextInt(); // number of rows
         C = in.nextInt(); // number of cols

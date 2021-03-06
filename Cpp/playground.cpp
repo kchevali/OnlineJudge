@@ -1,62 +1,40 @@
 #include <bits/stdc++.h>
 using namespace std;
-typedef long long l;
-typedef vector<l> vl;
 
-class Primes {
- public:
-  vl primes;
-  vector<bool> bs;
+string convert(string s, int numRows) {
+  int n = s.length();
+  if (numRows == 1 || numRows >= n) return s;
 
-  // SIEVE
-  // generate all prime number that is less than or equal to upper
-  // pretty fast if upper <= 10^7
-  // call this method only once in main method, use 10^7 is enough for most of
-  // the cases a lot of following methods need prime list
-  Primes(l upper) {
-    l size = upper + 1, i;
-    bs = vector<bool>(size, true);
-    bs[0] = bs[1] = false;
-    for (l i = 2; i < size; i++)
-      if (bs[i]) {
-        for (l j = i * i; j < size; j += i) bs[j] = false;
-        primes.push_back(i);
-      }
+  int p = 2 * numRows - 2;
+  string o(n, 0);
+
+  for (int i = 0, index = 0; i < numRows; i++) {
+    for (int j = 0;; j++) {
+      int k = p * j + i, m = p * j + p - i;
+      if (k >= n) break;
+      o[index++] = s[k];
+      if (i > 0 && i < numRows - 1 && m < n) o[index++] = s[m];
+    }
   }
-
-  // return true if the number N is a prime number
-  //***IMPORTANT*** only works if N <= (the largest prime in the prime list)^2
-  bool isPrime(l N) {
-    if (N < bs.size()) return bs[N];
-    for (l p : primes)
-      if (N % p == 0) return false;
-    return true;
-  }
-};
-
-double getF(Primes& p) {
-  double total = 0, mult = 1;
-  for (l prime : p.primes) {
-    total += (prime - 1) / mult;
-    mult *= prime;
-    cout << mult << "\n";
-  }
-  return total;
+  return o;
 }
-
-double next(double f) { return floor(f) * (f - floor(f) + 1); }
 
 int main() {
-  Primes p(89);
+  string in = "PAYPALISHIRING";
+  int rows = 4;
+  string out = convert(in, rows);
+  string ans = "PINALSIGYAHRPI";
 
-  double f = getF(p);
-  for (l i = 0; i < p.primes.size(); i++) {
-    l prime = (l)floor(f);
-    if (prime != p.primes[i]) {
-      cout << "Correct: " << (100.0 * i / p.primes.size()) << "% \n";
-      exit(0);
-    }
-    f = next(f);
-  }
-  cout << "PASS ALL\n";
+  cout << "SOL:" << out << "\n";
+  cout << "ANS:" << ans << "\n";
 }
+
+/*
+get new position formula
+Row 0: 6x+0
+Row 1: 6x+1 and 6x+5
+Row 2: 6x+2 and 6x+4
+Row 3: 6x+3
+
+x:
+*/

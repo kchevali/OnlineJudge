@@ -6,6 +6,13 @@ class Primes {
   vl primes;
   vector<bool> bs;
 
+  // Upper | # of Primes
+  //   1e8 | 6e6
+  //   1e7 | 7e5
+  //   1e6 | 8e4
+  //   1e5 | 1e4
+  //   1e4 | 1300
+
   // SIEVE
   // generate all prime number that is less than or equal to upper
   // pretty fast if upper <= 10^7

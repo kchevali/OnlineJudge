@@ -1,15 +1,13 @@
 #! /bin/bash
 cd CodeTester
 printf "..Running..\n"
-javac Main.java
 TIMEFORMAT=%R
-for i in /Users/kevin/Documents/ACMSolutions/2017/OddPalindrome/data/secret/*.in; do
-# for i in /Users/kevin/Documents/Code/Java/CodeTester/IO/*.in; do
+for i in /Users/kevin/Documents/ACMSolutions/2016/Alphabet/data/*.in; do
     [ -f "$i" ] || break
-    t=$( time (python3 Main.py < "$i" > "temp.ans")2>&1 1>/dev/null)
+    t=$( time (python3 Main.py < "$i" > "temp.out")2>&1 1>/dev/null)
     if [[ $? == "0" ]]
     then
-        diff -w temp.ans "${i%%.*}.ans" > /dev/null
+        diff -w temp.out "${i%%.*}.out" > /dev/null
         if [[ $? == "0" ]]
         then
             if (( $(awk 'BEGIN {print ("'$t'" <= "'1'")}') ))

@@ -36,8 +36,8 @@ const double EPS = 1e-6;
 
 //---------------------------------------------------------------BITS
 #define count_bits __builtin_popcountll     // number of 'on' bits in long long
-#define trail_bits __builtin_ffsll          // index of rightmost 'on' (1-64)
-#define lead_bits __builtin_clzll           // index of leftmost  'on' (1-64) from left
+#define trail_bits __builtin_ffsll          // number of leading zeros (most significant)
+#define lead_bits __builtin_clzll           // number of trailing zeros (least significant)
 #define bit(x, b) bitset<b>(x).to_string()  // prints x with b bits
 #define LSOne(x) x &(-x)                    // least significant bit
 
@@ -61,7 +61,7 @@ const double EPS = 1e-6;
 void err(istream_iterator<string> it) {}
 template <typename T, typename... Args>
 void err(istream_iterator<string> it, T a, Args... args) {
-  cerr << *it << " = " << a << "   ";
+  cerr << (*it).substr(it->length() <= 1 ? 0 : 1) << " = " << a << "   ";
   err(++it, args...);
 }
 

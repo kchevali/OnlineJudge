@@ -1,14 +1,16 @@
 #include "../all.cpp"
 
 // Global variables
+typedef tuple<int, l, l> edge;  // weight, a, b
 const l N = 1e2;
 l maxLevel = inf, maxDistIndex = 0;
 l parent[N], rParent[N], path[N], depth[N], rDepth[N];
 l order[N], onStack[N], low[N], resi[N][N], cap[N][N];
+l heu[N];
 vector<l> adj[N], rAdj[N];
 vector<pair<l, l>> pAdj[N];
+vector<edge> eAdj[N];  // [h, w, b]
 bool vis[N], isNeg[N];
-typedef tuple<int, l, l> edge;  // weight, a, b
 
 // Get Path: get path from parent[]
 // l path[N];
@@ -311,6 +313,26 @@ void dijkstra(l src, l dest) {
   }
 }
 
+void aStar(l src, l dest) {
+  priority_queue<ll, vll, greater<ll>> pq;  // w, node
+  pq.push(make_pair(depth[src] = 0, parent[src] = src));
+  while (!pq.empty()) {
+    ll curr = pq.top();
+    pq.pop();
+    l a = curr.second;
+    if (a == dest) return;  // remove dest to explore all
+    if (vis[a]) continue;
+    vis[a] = true;
+    for (auto &[h, b] : pAdj[a]) {  // [w(a->b) + heu[a],b]
+      l w = h - heu[a];
+      if (!vis[b] && depth[a] + w < depth[b]) {
+        parent[b] = a, depth[b] = w + depth[a];
+        pq.push(make_pair(depth[b] + heu[b], b));
+      }
+    }
+  }
+}
+
 // int main() {
 //   l n, m, q, s;
 //   l x, y, w;
@@ -431,6 +453,7 @@ l SCC(vl *adj, l n, l *low) {
 
 // All Pair Shortest Path (APSP Floyd Warshall’s Algorithm)
 // Accepts negative weights
+// const l inf = 0x3f3f3f3f3f3f3f3f, N = 100 + 10;;
 // Complexity: O(N^3)
 l depNN[N][N];
 void APSP(l n) {
