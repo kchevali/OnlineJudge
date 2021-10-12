@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.json": "json",
         "__locale": "cpp",
         "__string": "cpp",
         "regex": "cpp",
@@ -85,6 +86,26 @@
         "typeinfo": "cpp",
         "unordered_map": "cpp",
         "unordered_set": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "any": "cpp",
+        "barrier": "cpp",
+        "charconv": "cpp",
+        "codecvt": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "coroutine": "cpp",
+        "latch": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "shared_mutex": "cpp",
+        "span": "cpp",
+        "variant": "cpp",
+        "*.tcc": "cpp",
+        "cuchar": "cpp",
+        "memory_resource": "cpp",
+        "source_location": "cpp",
+        "ranges": "cpp",
+        "stop_token": "cpp",
+        "syncstream": "cpp"
     }
 }

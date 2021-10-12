@@ -76,6 +76,20 @@ void tokenize() {
   }
 }
 
+void split(const string& s, const string& delim, vector<string>& out){
+  size_t last = 0; size_t next = 0;
+  while ((next = s.find(delim, last)) != string::npos) {
+    out.push_back(s.substr(last, next-last));
+    last = next + 1;
+  }
+  out.push_back(s.substr(last));
+}
+
+void splitPair(const string& s, const string& delim, string& a, string& b){
+  size_t next = s.find(delim, 0);
+  a = s.substr(0, next), b = s.substr(next, s.length());
+}
+
 //-----------------------------------------------------String Parsing
 // sscanf(line.c_str(),"%lld %*s %s %lld",&num1,string,&num2)
 // discard parameter with * in '%*s'
