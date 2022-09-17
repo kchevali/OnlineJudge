@@ -1,0 +1,19 @@
+{
+    "tasks": [{
+            "type": "shell",
+            "label": "Run Cases (Clear Output)",
+            "command": "bash scripts/run_cases.sh ${fileDirname} ${fileBasename} 1"
+        },
+        {
+            "type": "shell",
+            "label": "Run Cases",
+            "command": "bash scripts/run_cases.sh ${fileDirname} ${fileBasename} 0"
+        },
+        {
+            "type": "shell",
+            "label": "Copy Tests",
+            "command": "bash scripts/copy_tests.sh $PWD/output"
+        }
+    ],
+    "version": "2.0.0"
+}
