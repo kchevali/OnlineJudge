@@ -1,7 +1,4 @@
-#include <bits/stdc++.h>
 
-#include "../all.cpp"
-using namespace std;
 typedef long long l;
 // Coin Change (CC)
 // Given a set of coin values and the target amount V, what is the minimum
@@ -84,6 +81,7 @@ typedef long long l;
 
 // complexity coins.size() * total
 // https://www.youtube.com/watch?v=Y0ZqKpToTic
+
 #define inf 0x3f3f3f3fLL
 const l MAX_COIN = 10, MAX_TOTAL = 500;
 

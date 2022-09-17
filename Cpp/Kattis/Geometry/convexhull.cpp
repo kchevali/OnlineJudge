@@ -1,28 +1,14 @@
 #include <bits/stdc++.h>
-#define PB emplace_back
-#define C cout <<
-#define E << "\n"
-#define _ << " " <<
+using l = long long;
+using o = l;
+#define EPS 1e-6
+
 #define gc getchar_unlocked
-#define fpp(i, a, b) for (i = a; i < b; i++)
-#define fmm(i, a, b) for (i = b; i-- > a;)
-#define v(t) vector<t>
-const double EPS = 1e-6;
-using namespace std;
-typedef long long l;
-typedef long long o;
-typedef pair<o, o> oo;
-typedef v(oo) voo;
-
-#define xx first
-#define yy second
-
-void read(l &x) {
+void readInt(l &x) {
   l c = gc();
   x = 0;
   int neg = 0;
-  for (; ((c < 48 || c > 57) && c != '-'); c = gc())
-    ;
+  for (; ((c < 48 || c > 57) && c != '-'); c = gc());
   if (c == '-') {
     neg = 1;
     c = gc();
@@ -33,104 +19,101 @@ void read(l &x) {
   if (neg) x = -x;
 }
 
-oo sub(oo a, oo b) { return make_pair(a.first - b.first, a.second - b.second); }
-o dot(oo a, oo b) { return a.first * b.first + a.second * b.second; }
-o cross(oo a, oo b) { return a.first * b.second - a.second * b.first; }
-l cmp(o a, o b) { return abs(a - b) < EPS ? 0 : (a > b ? 1 : -1); }
-o ccw(oo a, oo b, oo c) { return cross(sub(b, a), sub(c, a)); }
-o distSq(oo a, oo b) {
-  return (a.xx - b.xx) * (a.xx - b.xx) + (a.yy - b.yy) * (a.yy - b.yy);
-}
-oo firstPoint;
-bool angleCmp(const oo a, const oo b) {
-  l deg = ccw(a, b, firstPoint);
-  // C "CHECKING - A:" _ a.xx _ a.yy _ "B:" _ b.xx _ b.yy _ "DEG:" _ deg E;
-  return deg == 0 ? (distSq(firstPoint, a) < distSq(firstPoint, b)) : deg > 0;
-}
+struct Point {
+  o x=0, y=0;
+  Point() {}
+  Point(o x, o y): x(x), y(y) {}
 
-// voo convexHull(voo &p) {
-//   l i, firstIndex = 0, n = p.size();
-//   fpp(i, 1, n) {
-//     if (p[i].second < p[firstIndex].second ||
-//         (p[i].second == p[firstIndex].second &&
-//          p[i].first < p[firstIndex].first))
-//       firstIndex = i;
-//   }
-//   voo hull = voo(2 * n);
-//   fpp(i, 0, 3) hull[i] = p[i];
-//   l index = 3;
-//   fpp(i, 3, n) {
-//     while (ccw(hull[index - 2], hull[index - 1], p[i]) <= 0) {
-//       index--;
-//     }
-//     hull[index] = p[i];
+  bool operator==(const Point& other){
+    return x == other.x && y == other.y;
+  }
+};
 
-//   }
-// }
+using Points = std::vector<Point>;
 
-l smallestIndex(voo &p, l n) {
-  l i, firstIndex = 0;
-  fpp(i, 1, n) {
-    if (p[i].yy < p[firstIndex].yy ||
-        (p[i].yy == p[firstIndex].yy && p[i].xx < p[firstIndex].xx))
-      firstIndex = i;
+Point add(const Point& a, const Point& b) { return Point(a.x + b.x, a.y + b.y); }
+Point sub(const Point& a, const Point& b) { return Point(a.x - b.x, a.y - b.y); }
+Point scale(const Point& a, o c) { return Point(a.x * c, a.y * c); }
+
+o dot(const Point& a, const Point& b) { return a.x * b.x + a.y * b.y; }
+o cross(const Point& a, const Point& b) { return a.x * b.y - a.y * b.x; }
+l cmp(o a, o b) { return fabs(a - b) < EPS ? 0 : (a > b ? 1 : -1); }
+l sgn(l val) { return val > 0 ? 1 : (val == 0 ? 0 : -1); }
+o sqrMag(const Point& a) { return dot(a, a); }
+o distSq(const Point& a, const Point& b) { return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y); }
+// left: postive // right: negative // colinear: 0
+o ccw(const Point& p, const Point& a, const Point& b) { return cross(sub(a, p), sub(b, p)); }
+
+l bottomLeftIndex(const Points &p, l n) {
+  auto firstIndex = 0;
+  for (auto i = 1; i < n; i++) {
+    if (p[i].y < p[firstIndex].y || (p[i].y == p[firstIndex].y && p[i].x < p[firstIndex].x)) firstIndex = i;
   }
   return firstIndex;
 }
 
-voo convexHull(voo &p) {
-  l i, n = p.size();
-  swap(p[0], p[smallestIndex(p, n)]);
-  firstPoint = p[0];
+Point firstPoint;
+bool angleCmp(const Point& a, const Point& b) {
+  auto deg = ccw(a, b, firstPoint);
+  return deg == 0 ? (distSq(firstPoint, a) < distSq(firstPoint, b)) : deg > 0;
+}
 
-  sort(p.begin() + 1, p.end(), angleCmp);
-  fpp(i, 2, n) {
-    if (ccw(firstPoint, p[i - 1], p[i]) == 0) {
-      p.erase(p.begin() + (--i));
-      n--;
+
+// return the convex hull of a set of points
+// required: firstPoint, ccw(),cross(),sub(),angleCmp
+// out - required buffer size of 2*p.size()
+// Complexity: n log n
+void convexHull(Points& p, l n, Points& q, Points& out, l& outLength) {
+    std::swap(p[0], p[bottomLeftIndex(p, n)]);
+    firstPoint = p[0];
+
+    sort(p.begin() + 1, p.begin() + n, angleCmp);
+    auto qi = 0;
+    q[qi++] = p[0];
+    // remove colinear points
+    for (auto i = 2; i < n; i++)
+        if (ccw(firstPoint, p[i - 1], p[i]) != 0) {
+            q[qi++] = p[i - 1];
+        }
+    q[qi++] = p[n - 1];
+    n = qi;
+    if (n <= 2){
+        out[0] = q[0], out[1] = q[1];
+        outLength = (n == 2 && q[0] == q[1]) ? 1 : n;
+        return;
     }
-  }
-  if (n <= 2) return p[0] == p[1] ? voo{p[0]} : p;
 
-  voo hull = voo(2 * n);
-  fpp(i, 0, 3) hull[i] = p[i];
-  l h = 3;
-  fpp(i, 3, n) {
-    while (ccw(hull[h - 2], hull[h - 1], p[i]) <= 0) h--;
-    hull[h++] = p[i];
-  }
-  return voo(hull.begin(), hull.begin() + h);
+    outLength = 3;
+    for (auto i = 0; i < outLength; i++) out[i] = q[i];
+    for (auto i = outLength; i < n; i++) {
+        while (ccw(out[outLength - 2], out[outLength - 1], q[i]) <= 0) outLength--;
+        out[outLength++] = q[i];
+    }
 }
 
 int main() {
-  ios_base::sync_with_stdio(false);
-  cin.tie(NULL);
-  l n, i, j;
-  read(n);
-  while (n) {
-    voo pts = voo(n);
-    fpp(i, 0, n) {
-      l x, y;
-      read(x);
-      read(y);
-      pts[i] = make_pair(x, y);
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
+
+    l N = 10000;
+    Points points(N);
+    Points hull(2*N);
+    Points buffer(N);
+    l hullLength = 0;
+
+    l n;
+    readInt(n);
+    while(n > 0){
+        for(l i = 0; i < n; i++){
+            readInt(points[i].x), readInt(points[i].y);
+        }
+        firstPoint = points[0];
+        convexHull(points, n, buffer, hull, hullLength);
+
+        std::printf("%lld\n", hullLength);
+        for(l i = 0; i < hullLength; i++){
+            std::printf("%lld %lld\n", hull[i].x, hull[i].y);
+        }
+        readInt(n);
     }
-    auto hull = convexHull(pts);
-    C hull.size() E;
-    for (auto h : hull) C h.first _ h.second E;
-    read(n);
-  }
 }
-/*
-8
-0 0
-1 4
-3 1
-3 3
-5 5
-5 2
-7 0
-9 6
-
-
- */

@@ -9,8 +9,12 @@ int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
 
-    l p, q, s;
-    cin >> p >> q >> s;
-    
-    cout << (lcm(p, q) <= s ? "yes" : "no") << "\n";
+    l n;
+    cin >> n;
+    while(n--){
+        l a, b;
+        cin >> a >> b;
+        cout << lcm(a, b) << "\n";
+
+    }
 }
