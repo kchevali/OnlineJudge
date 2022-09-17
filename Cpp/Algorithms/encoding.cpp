@@ -1,44 +1,69 @@
-#include "../all.cpp"
+using l = long long;
 
-// IMPORTS: typedef vector<string> vs; typedef pair<l, l> ll;
-// typedef vector<ll> vll; typedef vector<l> vl;
+#include <vector>
+#include <string>
+#include <queue>
 
-// helper function
-void huffman2(l index, string code, vll &child, vs &out) {
-  if (child[index].first == -1) {
-    out[index] = code;
-  } else {
-    huffman2(child[index].first, code + "0", child, out);
-    huffman2(child[index].second, code + "1", child, out);
+namespace Huffman {
+  struct Pair {
+    l freq, idx;
+    Pair(l freq, l idx): freq(freq), idx(idx) {}
+  };
+
+  struct PairComp {
+    bool operator() (const Pair& a, const Pair& b) {
+    return a.freq > b.freq;
+  }
+};
+
+  using Nums = std::vector<l>;
+  using Pairs = std::vector<Pair>;
+  using Strings = std::vector<std::string>;
+
+  void printCode(l idx, std::string code, Pairs &child, Strings &out) {
+    if (child[idx].freq == -1) {
+      // std::cout << "C: " << idx << " " << code << "\n"; 
+      out[idx] = code;
+    } else {
+      printCode(child[idx].freq, code + "0", child, out);
+      printCode(child[idx].idx, code + "1", child, out);
+    }
+  }
+
+  // main function
+  Strings solve(Nums &freq) {
+    std::priority_queue<Pair, Pairs, PairComp> q;
+    auto n = freq.size();
+
+    Pairs pairs;
+    for (auto i = 0; i < n; i++) {
+      q.push(Pair(freq[i], i));
+      pairs.emplace_back(Pair(-1, -1));
+      // std::cout << "PUSH: " << freq[i] << " @ " << i << "\n";
+    }
+
+    for (auto i = 0; i < n - 1; i++) {
+      auto [freq, idx] = q.top();
+      // std::cout << "Freq: " << freq << " Idx: " << idx << "\n";
+      q.pop();
+      auto [freq2, idx2] = q.top();
+      q.pop();
+      q.push(Pair(freq + freq2, pairs.size()));
+      // std::cout << "--PUSH: " << (freq + freq2) << " @ " << pairs.size() << "\n";
+      pairs.emplace_back(Pair(idx, idx2));
+    }
+
+    Strings out = Strings(n);
+    printCode(q.top().idx, "", pairs, out);
+    return out;
   }
 }
 
-// main function
-vs huffman(vl &f) {
-  priority_queue<ll, vector<ll>, greater<ll>> q;
-  l i, n = f.size();
-  vll v;
-  for (l i = 0; i < n; i++) {
-    q.push((ll){f[i], i});
-    v.emplace_back((ll){-1, -1});
-  }
-  for (l i = 0; i < n - 1; i++) {
-    l f = q.top().first;
-    l a = q.top().second;
-    q.pop();
-    q.push((ll){f + q.top().first, v.size()});
-    v.emplace_back((ll){a, q.top().second});
-    q.pop();
-  }
-  vs out = vs(n);
-  huffman2(q.top().second, "", v, out);
-  return out;
-}
-
+#include <iostream>
 int main() {
-  vl v = {10000, 2, 2, 100};  // frequencies
-  vs out = huffman(v);
-  for (string s : out) cout << s << " ";
-  cout << "\n";
+  Huffman::Nums v = {5, 1, 6, 3};  // frequencies
+  auto out = Huffman::solve(v);
+  for (auto &s : out) std::cout << s << ", ";
+  std::cout << "\n";
   return 0;
 }

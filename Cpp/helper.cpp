@@ -1,14 +1,19 @@
-#include "Template.cpp"
+#include <iostream>
+#include <string>
+#include <vector>
+#include <iterator>
+#include <math.h>
+
 //---------------------------------------------------------------Cheat Sheet
-// Fast Counting: if(cond) x++ -> x += cond
-// Check even: "its " + (num & 1 ? "odd" : "even");
-// Check if string palidrome: equal(s.begin(), s.begin() + s.size()/2,
-// s.rbegin())
+// Check if string palidrome: equal(s.begin(), s.begin() + s.size()/2, s.rbegin())
 
+// Typing
+using l = int;
+using o = double;
+
+// Input
 #define gc getchar_unlocked
-typedef double o;
-
-void read(l &x) {
+void readInt(l &x) {
   l c = gc();
   x = 0;
   int neg = 0;
@@ -24,17 +29,29 @@ void read(l &x) {
   if (neg) x = -x;
 }
 
+// Floating Point
 #define dc(x) fixed << setprecision(x) <<
-#define MID(x, y) x + (y - x) / 2
+#define EPS = 1e-6;
+inline bool fls(double a, double b){
+  return a < b && (b - a > EPS);
+}
+inline bool fgr(double a, double b){
+  return b < a && (a - b > EPS);
+}
+inline bool feq(double a, double b){
+  return fabs(a - b) < EPS;
+}
+
+#define MID(x, y) (y - x) / 2 + x
+
+
+// CONSTANTS
 #define inf 0x3f3f3f3fLL
 #define linf 0x3f3f3f3f3f3f3f3fLL
 #define dinf numeric_limits<double>::infinity()
-
-// CONSTANTS
 const double pi = 2 * acos(0.0);
-const double EPS = 1e-6;
 
-//---------------------------------------------------------------BITS
+// BITS
 #define count_bits __builtin_popcountll     // number of 'on' bits in long long
 #define trail_bits __builtin_ffsll          // number of leading zeros (most significant)
 #define lead_bits __builtin_clzll           // number of trailing zeros (least significant)
@@ -42,51 +59,41 @@ const double EPS = 1e-6;
 #define LSOne(x) x &(-x)                    // least significant bit
 
 //---------------------------------------------------------------DEBUGGING
-#define con(x, a, b) \
-  if (x < a || x >= b) cerr << "Out of Bounds: " << #x << endl;
-#define arr(x)                  \
-  C "[";                        \
-  for (auto &y : x) C y << " "; \
-  C "]" E;
-#define db(args...)                           \
-  {                                           \
-    string _s = #args;                        \
-    replace(_s.begin(), _s.end(), ' ', '\0'); \
-    replace(_s.begin(), _s.end(), ',', ' ');  \
-    stringstream _ss(_s);                     \
-    istream_iterator<string> _it(_ss);        \
-    err(_it, args);                           \
-    cerr << "\n";                             \
-  }
-void err(istream_iterator<string> it) {}
+#ifndef NDEBUG
+#define ASSERT(condition, message) \
+  do { \
+      if (! (condition)) { \
+          std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
+                    << " line " << __LINE__ << ": " << message << std::endl; \
+          std::terminate(); \
+      } \
+  } while (false)
+
+#define dbarr(x) std::cerr << "[";for (auto &y : x) std::cout << y << " "; std::cerr << "]\n";
+
 template <typename T, typename... Args>
 void err(istream_iterator<string> it, T a, Args... args) {
-  cerr << (*it).substr(it->length() <= 1 ? 0 : 1) << " = " << a << "   ";
+  std::cerr << (*it).substr(it->length() <= 1 ? 0 : 1) << " = " << a << "   ";
   err(++it, args...);
-}
-
-void tokenize() {
-  string line, token;
-  while (getline(cin, line)) {
-    cout << line << "\n";
-    stringstream ss(line);
-    while (ss >> token) {
-      cout << "Token: " << token << "\n";
-    }
+};
+#define db(args...)                           \
+  {                                           \
+    std::string _s = #args;                        \
+    replace(_s.begin(), _s.end(), ' ', '\0'); \
+    replace(_s.begin(), _s.end(), ',', ' ');  \
+    std::stringstream _ss(_s);                     \
+    std::istream_iterator<std::string> _it(_ss);        \
+    err(_it, args);                           \
+    std::cerr << "\n";                             \
   }
-}
 
-void split(const string& s, const string& delim, vector<string>& out){
-  size_t last = 0; size_t next = 0;
-  while ((next = s.find(delim, last)) != string::npos) {
-    out.push_back(s.substr(last, next-last));
-    last = next + 1;
-  }
-  out.push_back(s.substr(last));
-}
+#define cbounds(x, a, b) ASSERT(x >= a && x < b, "Out of bounds")
+#else
+#   define ASSERT(condition, message)
+#endif
 
-void splitPair(const string& s, const string& delim, string& a, string& b){
-  size_t next = s.find(delim, 0);
+void splitPair(const std::string& s, const std::string& delim, std::string& a, std::string& b){
+  auto next = s.find(delim, 0);
   a = s.substr(0, next), b = s.substr(next, s.length());
 }
 
@@ -99,16 +106,14 @@ void splitPair(const string& s, const string& delim, string& a, string& b){
 //   return a.first == b.first ? a.second > b.second : a.first < b.first;
 // });
 
-//---------------------------------------------------------------Custom PQ
+//---------------------------------------------------------------Custom Priority Queue
 // typedef pair<l, l> ll;
 // struct PQC{
 //  bool operator()(ll const& a, ll const& b) const{
 //    return a.second < b.second || a.second == b.second && a.first < b.first;
 //  }
 // };
-// typedef priority_queue< ll, vector<ll>, PQC > pq;
-
-//---------------------------------------------------------------DATA STRUCTURES
+// typedef priority_queue< ll, std::vector<ll>, PQC > pq;
 
 /*
 // Simple import
