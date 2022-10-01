@@ -2,13 +2,14 @@
 
 # handle directories
 exit_script() { popd &> /dev/null; exit; }
+root_dir=$PWD
 pushd . &> /dev/null
 
 # allow exit code to persist piping
 set -o pipefail
 
 # clear output
-output_dir=$PWD/output
+output_dir=$root_dir/output
 clear_output=$3
 [ $clear_output -eq 1 ] && { echo "Clearing Output..."; rm -r $output_dir; mkdir $output_dir; }
 
@@ -25,7 +26,7 @@ cd $src_dir && g++ -std=c++17 "$src_file" -o "$src_exe" 2>&1 | tee "$output_dir/
 
 # copy test files
 if [ $clear_output -eq 1 ]; then
-    source copy_tests.sh $output_dir
+    source $root_dir/scripts/copy_tests.sh $output_dir
     echo "Running: $(basename $test_dir) test cases..."
 fi
 

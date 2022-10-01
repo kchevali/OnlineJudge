@@ -108,6 +108,9 @@
         "stop_token": "cpp",
         "syncstream": "cpp",
         "__bits": "cpp",
-        "__memory": "cpp"
+        "__memory": "cpp",
+        "expected": "cpp",
+        "spanstream": "cpp",
+        "stacktrace": "cpp"
     }
 }

@@ -24,25 +24,37 @@ l getPath(l src, l dest) {
 }
 
 // BFS: Unweighted - find path from one source
-// const l N = 1e4, inf = 0x3f3f3f3f3f3f3f3f;
-// l parent[N], depth[N];
-// vector<l> adj[N];
-// Main: memset(depth,0x3f,sizeof(l)*n);for (l j = 0; j < n; j++) adj[j] = vector<l>();
 // Complexity O(V+E)
-void bfs(l src) {
-  queue<l> q;
-  q.push(parent[src] = src);
-  // depth = unordered_map<l, l>();//for freq depth reset use unordered_map
-  depth[src] = 1;  // init depth to inf
-  while (!q.empty()) {
-    l a = q.front();
-    q.pop();
-    for (l b : adj[a]) {
-      if (depth[a] + 1 < depth[b]) {
-        depth[b] = depth[a] + 1, parent[b] = a, q.push(b);
-      }
+namespace BFS {
+    struct Vertex;
+    using Vertices = std::vector<Vertex*>;
+
+    const l inf = 0x3f3f3f3f3f3f3f3f;
+
+    struct Vertex {
+        l depth = inf;
+        Vertex const* parent = nullptr;
+        Vertices adj;
+
+        Vertex(): {}
+    };
+
+    void bfs(Vertex* src) {
+        std::queue<Vertex*> q;
+        src->parent = src;
+        src->depth = 0;
+        q.push(src);
+
+        while (!q.empty()) {
+            const auto& a = q.front();
+            q.pop();
+            for (auto& b : a->adj) {
+                if (a->depth + 1 < b->depth) {
+                    b->depth = a->depth + 1, b->parent = a, q.push(b);
+                }
+            }
+        }
     }
-  }
 }
 
 // const l N = 1e5, inf = 1e18;

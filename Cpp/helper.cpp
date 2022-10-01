@@ -97,6 +97,18 @@ void splitPair(const std::string& s, const std::string& delim, std::string& a, s
   a = s.substr(0, next), b = s.substr(next, s.length());
 }
 
+using Strings = std::vector<std::string>;
+Strings split(const std::string& s, char delim){
+  std::stringstream test(s);
+  std::string segment;
+  Strings seglist;
+
+  while(std::getline(test, segment, delim))
+  {
+    seglist.push_back(segment);
+  }
+}
+
 //-----------------------------------------------------String Parsing
 // sscanf(line.c_str(),"%lld %*s %s %lld",&num1,string,&num2)
 // discard parameter with * in '%*s'

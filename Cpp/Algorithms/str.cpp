@@ -1,27 +1,38 @@
-#include "../all.cpp"
+#include <string>
+#include <vector>
 
 // Min number of character edits, inserts, or deletions
-// if a[i] == b[j]: No change
-// if v[i][j] == v[i-1][j-1] + 1: set a[i] to b[j]
-// if v[i][j] == v[i-1][j] + 1: delete a[i]
-// if v[i][j] == v[i-1][j-1] + 1: insert b[j] to a[i]
-l minEditDistance2(string a, string b, l i, l j, vvl &v) {
-  if (i == -1) return j + 1;
-  if (j == -1) return i + 1;
-  if (v[i][j] >= 0) return v[i][j];
-  return v[i][j] = a[i] == b[j] ? minEditDistance2(a, b, i - 1, j - 1, v)
-                                : (min({minEditDistance2(a, b, i - 1, j, v),
-                                        minEditDistance2(a, b, i - 1, j - 1, v),
-                                        minEditDistance2(a, b, i, j - 1, v)}) +
-                                   1);
+namespace minEditDistance {
+
+  using l = long long;
+  using Nums = std::vector<l>;
+  using NumMatrix = std::vector<Nums>;
+
+  // if a[i] == b[j]: No change
+  // if v[i][j] == v[i-1][j-1] + 1: set a[i] to b[j]
+  // if v[i][j] == v[i-1][j] + 1: delete a[i]
+  // if v[i][j] == v[i-1][j-1] + 1: insert b[j] to a[i]
+  l helper(std::string a, std::string b, l i, l j, NumMatrix &v) {
+    if (i == -1) return j + 1;
+    if (j == -1) return i + 1;
+    if (v[i][j] >= 0) return v[i][j];
+    return v[i][j] = a[i] == b[j] ?
+      helper(a, b, i - 1, j - 1, v) : (
+        std::min({
+          helper(a, b, i - 1, j, v),
+          helper(a, b, i - 1, j - 1, v),
+          helper(a, b, i, j - 1, v)
+        }) + 1);
+  }
+
+  l solve(std::string a, std::string b) {
+    NumMatrix v(a.length(), Nums(b.length(), -1));
+    return helper(a, b, a.length() - 1, b.length() - 1, v);
+  }
 }
 
-l minEditDistance(string a, string b) {
-  vvl v = vvl(a.size(), vl(b.size(), -1));
-  return minEditDistance2(a, b, a.size() - 1, b.size() - 1, v);
-}
-
+#include <iostream>
 int main() {
-  C minEditDistance("abcdef", "azced") E;
+  std::cout << minEditDistance::solve("abcdef", "azced") << "\n";
   return 0;
 }
