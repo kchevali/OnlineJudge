@@ -1,8 +1,6 @@
 #include <bits/stdc++.h>
 using l = long long;
 
-
-
 struct Vertex;
 using Vertices = std::vector<Vertex*>;
 

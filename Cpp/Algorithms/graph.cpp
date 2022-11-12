@@ -475,6 +475,48 @@ void APSP(l n) {
         if (depNN[i][k] != inf && depNN[k][j] != inf) depNN[i][j] = min(depNN[i][j], depNN[i][k] + depNN[k][j]);
 }
 
+// All Pair Shortest Path (BFS)
+// Unweighted graph
+// Complexity: O(N^2 + N*M) - N: Vertices, M: Edges
+namespace AllPairBFS{
+    constexpr l N = 64;
+    constexpr l inf = 0x3f3f3f3f3f3f3f3f;
+
+    struct Vertex;
+    struct VertexState {
+        l depth = inf;
+        Vertex* parent = nullptr;
+    };
+
+    using Vertices = std::vector<Vertex*>;
+    struct Vertex {
+        l idx = 0;
+        VertexState states[N];
+        Vertices adj;
+        Vertex() {}
+        Vertex(l idx): idx(idx) {}
+    };
+
+    void bfs(Vertex* src) {
+        std::queue<Vertex*> q;
+        auto& src_st = src->states[src->idx];
+        src_st.parent = src;
+        src_st.depth = 0;
+        q.push(src);
+        while (!q.empty()) {
+            const auto& a = q.front();
+            const auto& a_st = a->states[src->idx];
+            q.pop();
+            for (auto& b : a->adj) {
+                auto& b_st = b->states[src->idx];
+                if (a_st.depth + 1 < b_st.depth) {
+                    b_st.depth = a_st.depth + 1, b_st.parent = a, q.push(b);
+                }
+            }
+        }
+    };
+}
+
 // int main() {
 //   // example that treats neg weight as inf
 //   l n;
