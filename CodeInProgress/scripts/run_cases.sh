@@ -17,15 +17,25 @@ clear_output=$3
 src_dir="$1"
 src_file="$2"
 src_ext="${src_file##*.}"
-[ "$src_ext" == "cpp" ] || [ "$src_ext" == "c" ] || { echo "Not a valid cpp file" && exit_script; }
 
 # compile source
 src_base="${src_file%.*}"
-src_exe="$src_base.exe"
+cd $src_dir || { echo "Directory does not exist $src_dir"; exit_script; }
+
 if [ "$src_ext" == "cpp" ]; then
-    cd $src_dir && g++ -std=c++17 "$src_file" -o "$src_exe" 2>&1 | tee "$output_dir/build.err" || { echo "Source did not compile..."; exit_script; }
+    src_exe="$src_dir/$src_base.exe"
+    g++ -std=c++17 "$src_file" -o "$src_exe" 2>&1 | tee "$output_dir/build.err" || { echo "C++ did not compile..."; exit_script; }
+elif [ "$src_ext" == "c" ]; then
+    src_exe="$src_dir/$src_base.exe"
+    gcc "$src_file" -o "$src_exe" 2>&1 | tee "$output_dir/build.err" || { echo "C did not compile..."; exit_script; }
+elif [ "$src_ext" == "java" ]; then
+    javac "$src_file" 2>&1 | tee "$output_dir/build.err" || { echo "Java did not compile..."; exit_script; }
+    src_exe="java $src_base"
+elif [ "$src_ext" == "py" ]; then
+    src_exe="python3 $src_dir/$src_file"
 else
-     cd $src_dir && gcc "$src_file" -o "$src_exe" 2>&1 | tee "$output_dir/build.err" || { echo "Source did not compile..."; exit_script; }
+    echo "Not a valid source file (cpp, c, java, py)..."
+    exit_script
 fi
 
 # copy test files
@@ -42,7 +52,9 @@ for file in *.in; do
     real_output="$output_dir/${file%.*}.ans"
     touch $real_output
 
-    $src_dir/$src_exe < "$output_dir/$file" > "$stdout_output" 2> "$stderr_output"
+    cd $src_dir
+    $src_exe < "$output_dir/$file" > "$stdout_output" 2> "$stderr_output"
+    cd - > /dev/null
 
     echo ${file%.*}: $(diff "$stdout_output" "$real_output" &> /dev/null && echo PASS || echo FAIL)
 done
