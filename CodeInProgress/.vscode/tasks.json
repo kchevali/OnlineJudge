@@ -1,5 +1,6 @@
 {
-    "tasks": [{
+    "tasks": [
+        {
             "type": "shell",
             "label": "Run Cases (Clear Output)",
             "command": "bash scripts/run_cases.sh ${fileDirname} ${fileBasename} 1"
@@ -7,7 +8,12 @@
         {
             "type": "shell",
             "label": "Run Cases",
-            "command": "bash scripts/run_cases.sh ${fileDirname} ${fileBasename} 0"
+            "command": "bash scripts/run_cases.sh ${fileDirname} ${fileBasename} 0",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         },
         {
             "type": "shell",

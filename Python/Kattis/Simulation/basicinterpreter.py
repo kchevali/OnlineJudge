@@ -1,9 +1,15 @@
 
 from typing import  Dict, List, Union
+from math import ceil, floor
 # from sys import stderr
 
 # def debug_print(*args:Any) -> None:
 #     print(*args, file=stderr)
+
+def to_int32(val:int) -> int:
+    val &= ((1<<32)-1)
+    if val & (1<<31): val -= (1<<32)
+    return val
 
 class Value:
     def __init__(self, value:int=0) -> None:
@@ -37,19 +43,20 @@ class ArithmeticOperation(Arithmetic):
 
 class Addition(ArithmeticOperation):
     def eval(self) -> int:
-        return self.a.value + self.b.value
+        return to_int32(self.a.value + self.b.value)
 
 class Subtraction(ArithmeticOperation):
     def eval(self) -> int:
-        return self.a.value - self.b.value
+        return to_int32(self.a.value - self.b.value)
 
 class Multiplication(ArithmeticOperation):
     def eval(self) -> int:
-        return self.a.value * self.b.value
+        return to_int32(self.a.value * self.b.value)
 
 class Division(ArithmeticOperation):
     def eval(self) -> int:
-        return self.a.value // self.b.value
+        result: float = self.a.value / self.b.value
+        return to_int32(ceil(result) if result < 0 else floor(result))
 
 class Conditional(Line):
     def __init__(self, a:Value, b:Value) -> None:

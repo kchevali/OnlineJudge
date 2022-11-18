@@ -17,12 +17,16 @@ clear_output=$3
 src_dir="$1"
 src_file="$2"
 src_ext="${src_file##*.}"
-[ "$src_ext" == "cpp" ] || { echo "Not a valid cpp file" && exit_script; }
+[ "$src_ext" == "cpp" ] || [ "$src_ext" == "c" ] || { echo "Not a valid cpp file" && exit_script; }
 
 # compile source
 src_base="${src_file%.*}"
 src_exe="$src_base.exe"
-cd $src_dir && g++ -std=c++17 "$src_file" -o "$src_exe" 2>&1 | tee "$output_dir/build.err" || { echo "Source did not compile..."; exit_script; }
+if [ "$src_ext" == "cpp" ]; then
+    cd $src_dir && g++ -std=c++17 "$src_file" -o "$src_exe" 2>&1 | tee "$output_dir/build.err" || { echo "Source did not compile..."; exit_script; }
+else
+     cd $src_dir && gcc "$src_file" -o "$src_exe" 2>&1 | tee "$output_dir/build.err" || { echo "Source did not compile..."; exit_script; }
+fi
 
 # copy test files
 if [ $clear_output -eq 1 ]; then
